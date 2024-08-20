@@ -1,11 +1,27 @@
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from 'vue'
+import { defineComponent, ref, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default defineComponent({
     setup() {
-        const trackingNumber = ref('')
         const router = useRouter()
+        const trackingNumber = ref('')
+        const resultData = ref('')
+        const imageResult = ref('')
+        const trackButton = ref()
+
+        // Watch for changes in the route query parameters
+        watch(
+            () => router.currentRoute.value.query,
+            (newQuery) => {
+                // Check if the trackingNumber query parameter exists
+                if (newQuery.trackingNumber) {
+                    // Update the trackingNumber ref with the value from the URL
+                    trackingNumber.value = newQuery.trackingNumber as string
+                }
+            },
+            { immediate: true }
+        ) // immediate: true ensures the watcher runs immediately after setup
 
         watchEffect(() => {
             // Check if trackingNumber is not empty before updating the URL
@@ -17,9 +33,18 @@ export default defineComponent({
             }
         })
 
+        const handleEnterKey = () => {
+            console.log('Enter key pressed')
+            // Call the trackPackage method when the Enter key is pressed
+            trackButton.value.click()
+        }
+
         return {
             trackingNumber,
-            resultData: ''
+            resultData,
+            imageResult,
+            trackButton,
+            handleEnterKey
         }
     },
     methods: {
@@ -43,15 +68,31 @@ export default defineComponent({
                 return
             }
             const tempData = await response.json()
-            this.resultData = tempData.images
-            console.log(JSON.stringify(this.resultData))
+            this.imageResult = tempData.images
+            console.log(JSON.stringify(this.imageResult))
         }
     }
 })
 </script>
 <template>
     <h1>Postmaster</h1>
-    <input v-model="trackingNumber" type="text" placeholder="Enter tracking number" />
-    <button @click="trackPackage">Track</button>
+    <input
+        v-model="trackingNumber"
+        type="text"
+        placeholder="Enter tracking number"
+        @keyup.enter="handleEnterKey"
+    />
+    <button ref="trackButton" @click="trackPackage">Track</button>
     <button @click="getTrackingImage">Load images</button>
+
+    <p>{{ resultData }}</p>
+    <!-- Dynamically display images -->
+    <div v-if="imageResult && imageResult.length > 0">
+        <img
+            v-for="(imageUrl, index) in imageResult"
+            :key="index"
+            :src="imageUrl"
+            :alt="'Image ' + (index + 1)"
+        />
+    </div>
 </template>
