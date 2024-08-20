@@ -1,1 +1,25 @@
 /* color palette from <https://github.com/vuejs/theme> */
+:root {
+    --color-success: #a6e3a1;
+    --color-warning: #f9e2af;
+    --color-danger: #f38ba8;
+    --color-background: #1e1e2e;
+    --color-foreground: #181825;
+    --color-foreground-secondary: #151520;
+    --color-font: #bac2de;
+    --color-title-font: #cba6f7;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-font);
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2 {
+    color: var(--color-title-font);
+}

@@ -1,12 +1,18 @@
 <script lang="ts">
+import type { ResultDataType } from '@/types'
 import { defineComponent, ref, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import NavBar from './NavBar.vue'
+
 
 export default defineComponent({
+    components: {
+        NavBar
+    },
     setup() {
         const router = useRouter()
         const trackingNumber = ref('')
-        const resultData = ref('')
+        const resultData = ref<ResultDataType>({ tracking_events: [] })
         const imageResult = ref('')
         const trackButton = ref()
 
@@ -34,8 +40,6 @@ export default defineComponent({
         })
 
         const handleEnterKey = () => {
-            console.log('Enter key pressed')
-            // Call the trackPackage method when the Enter key is pressed
             trackButton.value.click()
         }
 
@@ -75,7 +79,7 @@ export default defineComponent({
 })
 </script>
 <template>
-    <h1>Postmaster</h1>
+    <NavBar />
     <input
         v-model="trackingNumber"
         type="text"
@@ -85,7 +89,6 @@ export default defineComponent({
     <button ref="trackButton" @click="trackPackage">Track</button>
     <button @click="getTrackingImage">Load images</button>
 
-    <p>{{ resultData }}</p>
     <!-- Dynamically display images -->
     <div v-if="imageResult && imageResult.length > 0">
         <img
@@ -94,5 +97,10 @@ export default defineComponent({
             :src="imageUrl"
             :alt="'Image ' + (index + 1)"
         />
+    </div>
+    <div v-for="item in resultData.tracking_events">
+        <p>{{ item.date_time }}</p>
+        <p>{{ item.description }}</p>
+        <p>{{ item.status }}</p>
     </div>
 </template>
