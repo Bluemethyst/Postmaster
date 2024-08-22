@@ -4,12 +4,12 @@ import { defineComponent, ref, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
 
-
 export default defineComponent({
     components: {
         NavBar
     },
     setup() {
+        const proxyUrl = 'https://postmaster-proxy.bluemethyst.workers.dev/'
         const router = useRouter()
         const trackingNumber = ref('')
         const resultData = ref<ResultDataType>({ tracking_events: [] })
@@ -40,7 +40,9 @@ export default defineComponent({
         })
 
         const handleEnterKey = () => {
-            trackButton.value.click()
+            if (trackingNumber.value.trim() !== '') {
+                trackButton.value.click()
+            }
         }
 
         return {
@@ -48,13 +50,18 @@ export default defineComponent({
             resultData,
             imageResult,
             trackButton,
-            handleEnterKey
+            handleEnterKey,
+            proxyUrl
         }
     },
     methods: {
         async trackPackage() {
+            if (this.trackingNumber.trim() === '') {
+                console.log('Tracking number is empty.')
+                return
+            }
             const response = await fetch(
-                '/api/tracking/api/parceltrack/parcels?tracking_reference=' + this.trackingNumber
+                this.proxyUrl + 'track?tracking_reference=' + this.trackingNumber
             )
             if (!response.ok) {
                 console.error('Failed to track package')
@@ -66,7 +73,13 @@ export default defineComponent({
             console.log(JSON.stringify(this.resultData))
         },
         async getTrackingImage() {
-            const response = await fetch('api/tracking/api/image?tn=' + this.trackingNumber)
+            if (this.trackingNumber.trim() === '') {
+                console.log('Tracking number is empty.')
+                return
+            }
+            const response = await fetch(
+                this.proxyUrl + 'image?tracking_reference=' + this.trackingNumber
+            )
             if (!response.ok) {
                 console.error('Failed to gather images')
                 return
@@ -86,8 +99,8 @@ export default defineComponent({
         placeholder="Enter tracking number"
         @keyup.enter="handleEnterKey"
     />
-    <button ref="trackButton" @click="trackPackage">Track</button>
-    <button @click="getTrackingImage">Load images</button>
+    <button class="button" ref="trackButton" @click="trackPackage">Track</button>
+    <button class="button" @click="getTrackingImage">Load images</button>
 
     <!-- Dynamically display images -->
     <div v-if="imageResult && imageResult.length > 0">

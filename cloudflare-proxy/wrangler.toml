@@ -1,0 +1,4 @@
+name = "postmaster-proxy"
+compatibility_date = "2024-08-22"
+
+main = "index.js"

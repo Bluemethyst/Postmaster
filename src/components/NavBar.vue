@@ -19,9 +19,11 @@ export default defineComponent({
 @import '../assets/main.css';
 
 nav {
-    background-color: var(--color-background);
+    background-color: var(--color-foreground);
     color: var(--color-font);
     padding: 1rem;
     text-align: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 </style>
