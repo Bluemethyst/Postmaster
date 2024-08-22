@@ -94,6 +94,7 @@ export default defineComponent({
 <template>
     <NavBar />
     <input
+        class="input"
         v-model="trackingNumber"
         type="text"
         placeholder="Enter tracking number"
@@ -103,17 +104,18 @@ export default defineComponent({
     <button class="button" @click="getTrackingImage">Load images</button>
 
     <!-- Dynamically display images -->
-    <div v-if="imageResult && imageResult.length > 0">
+    <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
         <img
+            class="tracking-image"
             v-for="(imageUrl, index) in imageResult"
             :key="index"
             :src="imageUrl"
             :alt="'Image ' + (index + 1)"
         />
     </div>
-    <div v-for="item in resultData.tracking_events">
-        <p>{{ item.date_time }}</p>
-        <p>{{ item.description }}</p>
-        <p>{{ item.status }}</p>
+    <div v-for="item in resultData.tracking_events" class="tracking-items">
+        <p class="item-date">{{ item.date_time }}</p>
+        <p class="item-description">{{ item.description }}</p>
+        <p class="item-status">{{ item.status }}</p>
     </div>
 </template>

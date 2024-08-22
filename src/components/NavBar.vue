@@ -25,5 +25,8 @@ nav {
     text-align: center;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    font-family: "Chakra Petch", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 </style>
