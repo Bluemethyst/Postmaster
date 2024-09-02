@@ -28,5 +28,8 @@ nav {
     font-family: "Chakra Petch", sans-serif;
     font-weight: 400;
     font-style: normal;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 </style>

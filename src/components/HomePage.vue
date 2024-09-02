@@ -90,10 +90,16 @@ export default defineComponent({
             console.log(JSON.stringify(this.imageResult))
         },
         getIconType(status: string) {
-            if (status.includes('delivered')) {
+            if (status.includes('Delivered')) {
                 return 'check_circle'
             } else if (status.includes('in transit')) {
                 return 'local_shipping'
+            } else if (status.includes('depot') || status.includes('Depot')) {
+                return 'home'
+            } else if (status.includes('International departure')) {
+                return 'flight_takeoff'
+            } else if (status.includes('International arrival')) {
+                return 'flight_land'
             } else {
                 return 'error'
             }
@@ -103,13 +109,8 @@ export default defineComponent({
 </script>
 <template>
     <NavBar />
-    <input
-        class="input"
-        v-model="trackingNumber"
-        type="text"
-        placeholder="Enter tracking number"
-        @keyup.enter="handleEnterKey"
-    />
+    <input class="input" v-model="trackingNumber" type="text" placeholder="Enter tracking number"
+        @keyup.enter="handleEnterKey" />
     <button class="button" ref="trackButton" @click="trackPackage">Track</button>
     <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
         Load images
@@ -117,21 +118,17 @@ export default defineComponent({
 
     <!-- Dynamically display images -->
     <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
-        <img
-            class="tracking-image"
-            v-for="(imageUrl, index) in imageResult"
-            :key="index"
-            :src="imageUrl"
-            :alt="'Image ' + (index + 1)"
-        />
+        <img class="tracking-image" v-for="(imageUrl, index) in imageResult" :key="index" :src="imageUrl"
+            :alt="'Image ' + (index + 1)" />
     </div>
-    <div v-for="item in resultData.tracking_events" class="tracking-items">
-        <p class="item-date">{{ item.date_time }}</p>
-        <p class="item-description">
-            <i class="material-icons icon-large">{{ getIconType(item.status) }}</i>
-
-            {{ item.description }}
-        </p>
-        <p class="item-status">{{ item.status }}</p>
+    <div v-for="item in resultData.tracking_events" class="tracking-parent">
+        <div>
+            <i class="material-icons-outlined status-icons">{{ getIconType(item.status) }}</i>
+        </div>
+        <div class="tracking-items">
+            <p class="item-date">{{ item.date_time }}</p>
+            <p class="item-description">{{ item.description }}</p>
+            <p class="item-status">{{ item.status }}</p>
+        </div>
     </div>
 </template>
