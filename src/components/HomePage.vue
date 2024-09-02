@@ -51,7 +51,8 @@ export default defineComponent({
             imageResult,
             trackButton,
             handleEnterKey,
-            proxyUrl
+            proxyUrl,
+            hideButton: false
         }
     },
     methods: {
@@ -87,6 +88,15 @@ export default defineComponent({
             const tempData = await response.json()
             this.imageResult = tempData.images
             console.log(JSON.stringify(this.imageResult))
+        },
+        getIconType(status: string) {
+            if (status.includes('delivered')) {
+                return 'check_circle'
+            } else if (status.includes('in transit')) {
+                return 'local_shipping'
+            } else {
+                return 'error'
+            }
         }
     }
 })
@@ -101,7 +111,9 @@ export default defineComponent({
         @keyup.enter="handleEnterKey"
     />
     <button class="button" ref="trackButton" @click="trackPackage">Track</button>
-    <button class="button" @click="getTrackingImage">Load images</button>
+    <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
+        Load images
+    </button>
 
     <!-- Dynamically display images -->
     <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
@@ -115,7 +127,11 @@ export default defineComponent({
     </div>
     <div v-for="item in resultData.tracking_events" class="tracking-items">
         <p class="item-date">{{ item.date_time }}</p>
-        <p class="item-description">{{ item.description }}</p>
+        <p class="item-description">
+            <i class="material-icons icon-large">{{ getIconType(item.status) }}</i>
+
+            {{ item.description }}
+        </p>
         <p class="item-status">{{ item.status }}</p>
     </div>
 </template>
