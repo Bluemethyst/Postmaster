@@ -109,17 +109,19 @@ export default defineComponent({
 </script>
 <template>
     <NavBar />
-    <input
-        class="input"
-        v-model="trackingNumber"
-        type="text"
-        placeholder="Enter tracking number"
-        @keyup.enter="handleEnterKey"
-    />
-    <button class="button" ref="trackButton" @click="trackPackage">Track</button>
-    <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
-        Load images
-    </button>
+    <div class="input-div">
+        <input
+            class="input"
+            v-model="trackingNumber"
+            type="text"
+            placeholder="Enter tracking number"
+            @keyup.enter="handleEnterKey"
+        />
+        <button class="button" ref="trackButton" @click="trackPackage">Track</button>
+        <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
+            Load images
+        </button>
+    </div>
 
     <!-- Dynamically display images -->
     <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
@@ -133,7 +135,7 @@ export default defineComponent({
     </div>
     <div v-for="item in resultData.tracking_events.reverse()" class="tracking-parent">
         <div>
-            <i class="material-icons-outlined status-icons">{{ getIconType(item.status) }}</i>
+            <i class="material-icons-outlined" style="font-size: 60px;">{{ getIconType(item.status) }}</i>
         </div>
         <div class="tracking-items">
             <p class="item-date">{{ item.date_time }}</p>
