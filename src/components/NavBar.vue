@@ -10,26 +10,12 @@ export default defineComponent({
 </script>
 
 <template>
-    <nav>
+    <nav v-motion-slide-visible-top>
         <h1>Postmaster</h1>
+        <div class="credits">
+            <a target="_blank" href="https://icons8.com/icon/86875/mail">Mail</a> icon by <a target="_blank"
+                    href="https://icons8.com">Icons8</a>
+        </div>
     </nav>
 </template>
 
-<style scoped>
-@import '../assets/main.css';
-
-nav {
-    background-color: var(--color-foreground);
-    color: var(--color-font);
-    padding: 1rem;
-    text-align: center;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    font-family: "Chakra Petch", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-</style>

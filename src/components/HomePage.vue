@@ -3,6 +3,8 @@ import type { ResultDataType } from '@/types'
 import { defineComponent, ref, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
+import { format } from 'date-fns'
+
 
 export default defineComponent({
     components: {
@@ -45,6 +47,8 @@ export default defineComponent({
             }
         }
 
+        
+
         return {
             trackingNumber,
             resultData,
@@ -52,13 +56,28 @@ export default defineComponent({
             trackButton,
             handleEnterKey,
             proxyUrl,
-            hideButton: false
+            hideButton: false,
+            isLoadingImages: false,
+            isLoadingTracking: false
+        }
+    },
+    computed: {
+        reversedTrackingEvents() {
+            return this.resultData.tracking_events.slice().reverse();
         }
     },
     methods: {
+        formatDate(dateTime: string) {
+            return format(new Date(dateTime), 'PPpp');
+        },
         async trackPackage() {
+            this.$forceUpdate()
+
+            this.isLoadingTracking = true
             if (this.trackingNumber.trim() === '') {
                 console.log('Tracking number is empty.')
+                this.isLoadingTracking = false
+
                 return
             }
             const response = await fetch(
@@ -66,16 +85,23 @@ export default defineComponent({
             )
             if (!response.ok) {
                 console.error('Failed to track package')
+                this.isLoadingTracking = false
+
                 return
             }
             const tempData = await response.json()
             this.resultData = tempData.results[0]
-            console.log(this.trackingNumber)
-            console.log(JSON.stringify(this.resultData))
+            this.isLoadingTracking = false
+            this.$forceUpdate()
+
         },
         async getTrackingImage() {
+            this.isLoadingImages = true
+            this.$forceUpdate()
             if (this.trackingNumber.trim() === '') {
                 console.log('Tracking number is empty.')
+                this.isLoadingImages = false
+
                 return
             }
             const response = await fetch(
@@ -83,11 +109,14 @@ export default defineComponent({
             )
             if (!response.ok) {
                 console.error('Failed to gather images')
+                this.isLoadingImages = false
+
                 return
             }
             const tempData = await response.json()
             this.imageResult = tempData.images
-            console.log(JSON.stringify(this.imageResult))
+            this.isLoadingImages = false
+            this.$forceUpdate()
         },
         getIconType(status: string) {
             if (status.includes('Delivered')) {
@@ -109,38 +138,52 @@ export default defineComponent({
 </script>
 <template>
     <NavBar />
-    <div class="input-div">
-        <input
-            class="input"
-            v-model="trackingNumber"
-            type="text"
-            placeholder="Enter tracking number"
-            @keyup.enter="handleEnterKey"
-        />
+    <div v-motion-slide-visible-top class="input-div">
+        <input class="input" v-model="trackingNumber" type="text" placeholder="Enter tracking number"
+            @keyup.enter="handleEnterKey" />
         <button class="button" ref="trackButton" @click="trackPackage">Track</button>
         <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
             Load images
         </button>
     </div>
 
-    <!-- Dynamically display images -->
-    <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
-        <img
-            class="tracking-image"
-            v-for="(imageUrl, index) in imageResult"
-            :key="index"
-            :src="imageUrl"
-            :alt="'Image ' + (index + 1)"
-        />
+    <div v-if="isLoadingImages" class="loading-circle">
+        <span class="loader"></span>
     </div>
-    <div v-for="item in resultData.tracking_events.reverse()" class="tracking-parent">
-        <div>
-            <i class="material-icons-outlined" style="font-size: 60px;">{{ getIconType(item.status) }}</i>
+
+    <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
+        <img v-motion-slide-visible-top class="tracking-image" v-for="(imageUrl, index) in imageResult" :key="index"
+            :src="imageUrl" :alt="'Image ' + (index + 1)" />
+    </div>
+
+    <div>
+        <div v-if="isLoadingTracking" class="loading-circle">
+            <span class="loader"></span>
         </div>
-        <div class="tracking-items">
-            <p class="item-date">{{ item.date_time }}</p>
-            <p class="item-description">{{ item.description }}</p>
-            <p class="item-status">{{ item.status }}</p>
+
+        <div v-for="(item, index) in reversedTrackingEvents" :key="index" class="tracking-parent">
+            <div>
+                <i class="material-icons-outlined" style="font-size: 60px;" v-motion-slide-visible-left>{{
+                    getIconType(item.status) }}</i>
+            </div>
+            <div class="tracking-items" v-motion-slide-visible-right>
+                <div class="item-date">
+                    <i class="material-icons-outlined">event</i>
+                    <p>{{ formatDate(item.date_time) }}</p>
+                </div>
+                <div class="item-description">
+                    <i class="material-icons-outlined">description</i>
+                    <p>{{ item.description }}</p>
+                </div>
+                <div class="item-location">
+                    <i class="material-icons-outlined">pin_drop</i>
+                    <p>{{ item.depot_name }}</p>
+                </div>
+                <div class="item-status">
+                    <i class="material-icons-outlined">info</i>
+                    <p>{{ item.status }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
