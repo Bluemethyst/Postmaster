@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
 import { format } from 'date-fns'
 
-
 export default defineComponent({
     components: {
         NavBar
@@ -18,25 +17,19 @@ export default defineComponent({
         const imageResult = ref('')
         const trackButton = ref()
 
-        // Watch for changes in the route query parameters
         watch(
             () => router.currentRoute.value.query,
             (newQuery) => {
-                // Check if the trackingNumber query parameter exists
                 if (newQuery.trackingNumber) {
-                    // Update the trackingNumber ref with the value from the URL
                     trackingNumber.value = newQuery.trackingNumber as string
                 }
             },
             { immediate: true }
-        ) // immediate: true ensures the watcher runs immediately after setup
-
+        )
         watchEffect(() => {
-            // Check if trackingNumber is not empty before updating the URL
             if (trackingNumber.value !== '') {
                 router.push({ path: '/', query: { trackingNumber: trackingNumber.value } })
             } else {
-                // If trackingNumber is empty, clear the query parameter from the URL
                 router.push({ path: '/' })
             }
         })
@@ -46,8 +39,6 @@ export default defineComponent({
                 trackButton.value.click()
             }
         }
-
-        
 
         return {
             trackingNumber,
@@ -63,12 +54,12 @@ export default defineComponent({
     },
     computed: {
         reversedTrackingEvents() {
-            return this.resultData.tracking_events.slice().reverse();
+            return this.resultData.tracking_events.slice().reverse()
         }
     },
     methods: {
         formatDate(dateTime: string) {
-            return format(new Date(dateTime), 'PPpp');
+            return format(new Date(dateTime), 'PPpp')
         },
         async trackPackage() {
             this.$forceUpdate()
@@ -86,14 +77,21 @@ export default defineComponent({
             if (!response.ok) {
                 console.error('Failed to track package')
                 this.isLoadingTracking = false
-
                 return
             }
             const tempData = await response.json()
-            this.resultData = tempData.results[0]
-            this.isLoadingTracking = false
-            this.$forceUpdate()
-
+            if (tempData.results[0].errors) {
+                console.error('Failed to track package; Invalid tracking number')
+                console.log(tempData.results[0].errors)
+                this.resultData = tempData.results[0]
+                console.log(this.resultData)
+                this.isLoadingTracking = false
+                return
+            } else {
+                this.resultData = tempData.results[0]
+                this.isLoadingTracking = false
+                this.$forceUpdate()
+            }
         },
         async getTrackingImage() {
             this.isLoadingImages = true
@@ -101,7 +99,6 @@ export default defineComponent({
             if (this.trackingNumber.trim() === '') {
                 console.log('Tracking number is empty.')
                 this.isLoadingImages = false
-
                 return
             }
             const response = await fetch(
@@ -129,8 +126,14 @@ export default defineComponent({
                 return 'flight_takeoff'
             } else if (status.includes('International arrival')) {
                 return 'flight_land'
+            } else if (
+                status.includes('transit') ||
+                status.includes('Transit') ||
+                status.includes('With courier')
+            ) {
+                return 'local_shipping'
             } else {
-                return 'error'
+                return 'info'
             }
         }
     }
@@ -139,21 +142,37 @@ export default defineComponent({
 <template>
     <NavBar />
     <div v-motion-slide-visible-top class="input-div">
-        <input class="input" v-model="trackingNumber" type="text" placeholder="Enter tracking number"
-            @keyup.enter="handleEnterKey" />
+        <input
+            class="input"
+            v-model="trackingNumber"
+            type="text"
+            placeholder="Enter tracking number"
+            @keyup.enter="handleEnterKey"
+        />
         <button class="button" ref="trackButton" @click="trackPackage">Track</button>
         <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
             Load images
         </button>
     </div>
 
+    <h1 v-if="resultData.errors?.[0]" class="tracking-error">
+        <!-- isnt working -->
+        Tracking Error: {{ resultData.errors?.[0] }}
+    </h1>
+
     <div v-if="isLoadingImages" class="loading-circle">
         <span class="loader"></span>
     </div>
 
     <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
-        <img v-motion-slide-visible-top class="tracking-image" v-for="(imageUrl, index) in imageResult" :key="index"
-            :src="imageUrl" :alt="'Image ' + (index + 1)" />
+        <img
+            v-motion-slide-visible-top
+            class="tracking-image"
+            v-for="(imageUrl, index) in imageResult"
+            :key="index"
+            :src="imageUrl"
+            :alt="'Image ' + (index + 1)"
+        />
     </div>
 
     <div>
@@ -163,23 +182,27 @@ export default defineComponent({
 
         <div v-for="(item, index) in reversedTrackingEvents" :key="index" class="tracking-parent">
             <div>
-                <i class="material-icons-outlined" style="font-size: 60px;" v-motion-slide-visible-left>{{
-                    getIconType(item.status) }}</i>
+                <i
+                    class="material-icons-outlined"
+                    style="font-size: 60px"
+                    v-motion-slide-visible-left
+                    >{{ getIconType(item.status) }}</i
+                >
             </div>
             <div class="tracking-items" v-motion-slide-visible-right>
-                <div class="item-date">
+                <div v-if="item.date_time" class="item-date">
                     <i class="material-icons-outlined">event</i>
                     <p>{{ formatDate(item.date_time) }}</p>
                 </div>
-                <div class="item-description">
+                <div v-if="item.description" class="item-description">
                     <i class="material-icons-outlined">description</i>
                     <p>{{ item.description }}</p>
                 </div>
-                <div class="item-location">
+                <div v-if="item.depot_name" class="item-location">
                     <i class="material-icons-outlined">pin_drop</i>
                     <p>{{ item.depot_name }}</p>
                 </div>
-                <div class="item-status">
+                <div v-if="item.status" class="item-status">
                     <i class="material-icons-outlined">info</i>
                     <p>{{ item.status }}</p>
                 </div>

@@ -220,3 +220,29 @@ nav {
         clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
     }
 }
+
+@media screen and (max-width: 600px) {
+    .input-div {
+        flex-direction: column;
+    }
+
+    .tracking-parent {
+        width: 100%;
+    }
+
+    .tracking-items {
+        width: 100%;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .input {
+        width: 100%;
+    }
+
+    .tracking-images img {
+        width: 100%;
+    }
+}

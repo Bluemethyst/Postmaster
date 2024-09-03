@@ -13,9 +13,13 @@ export default defineComponent({
     <nav v-motion-slide-visible-top>
         <h1>Postmaster</h1>
         <div class="credits">
-            <a target="_blank" href="https://icons8.com/icon/86875/mail">Mail</a> icon by <a target="_blank"
-                    href="https://icons8.com">Icons8</a>
+            <a
+                target="_blank"
+                href="https://fonts.google.com/icons?selected=Material+Symbols+Outlined:package_2:FILL@0;wght@700;GRAD@0;opsz@48&icon.query=deliver&icon.size=64&icon.color=%2374c7ec&icon.style=Outlined&icon.platform=web"
+                >Package</a
+            >
+            icon from
+            <a target="_blank" href="https://fonts.google.com/icons">Google Fonts</a>
         </div>
     </nav>
 </template>
-
