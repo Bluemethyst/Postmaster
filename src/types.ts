@@ -6,6 +6,10 @@ export interface TrackingEventData {
 }
 
 export interface ResultDataType {
-    errors?: string[]
+    errors?: {
+        code: number
+        message: string
+        details: string
+    }[]
     tracking_events: TrackingEventData[]
 }
