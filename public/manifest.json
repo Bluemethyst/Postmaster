@@ -1,0 +1,13 @@
+{
+    "theme_color": "#74c7ec",
+    "background_color": "#1e1e2e",
+    "orientation": "any",
+    "display": "standalone",
+    "dir": "auto",
+    "lang": "en-US",
+    "name": "Postmaster",
+    "short_name": "Postmaster",
+    "start_url": "https://postmaster.bluemethyst.dev",
+    "scope": "https://postmaster.bluemethyst.dev",
+    "id": "dev.bluemethyst.web.postmaster"
+}
