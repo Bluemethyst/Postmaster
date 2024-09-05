@@ -1,8 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import LoginGoogle from './LoginGoogle.vue';
 
 export default defineComponent({
     name: 'NavBar',
+    components: {
+        LoginGoogle,
+    },
     setup() {
         return {}
     }
@@ -20,6 +24,7 @@ export default defineComponent({
             >
             icon from
             <a target="_blank" href="https://fonts.google.com/icons">Google Fonts</a>
+            <LoginGoogle />
         </div>
     </nav>
 </template>
