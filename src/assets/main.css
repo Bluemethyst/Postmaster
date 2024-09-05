@@ -222,7 +222,7 @@ nav {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media (hover: none), (hover: on-demand) and (pointer: coarse) {
     body {
         font-size: 32px;
     }
