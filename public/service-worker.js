@@ -9,8 +9,7 @@ self.addEventListener('install', (event) => {
                 '/manifest.json',
                 '/styles.css',
                 '/script.js',
-                '/images/icon-192x192.png',
-                '/images/icon-512x512.png'
+                '/icon.png'
             ])
         })
     )
@@ -53,7 +52,7 @@ self.addEventListener('push', (event) => {
         event.waitUntil(
             self.registration.showNotification(event.data.text(), {
                 body: event.data.text(),
-                icon: '/images/icon-192x192.png'
+                icon: '/icon.png'
             })
         )
     }
