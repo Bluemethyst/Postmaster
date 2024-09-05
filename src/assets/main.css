@@ -20,7 +20,7 @@ body {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 16px;
+    font-size: 18px;
     margin: 0;
     padding: 0;
 }
@@ -130,6 +130,7 @@ h2 {
 .item-status {
     display: flex;
     align-items: center;
+    margin-top: -20px;
     margin-bottom: -20px; /* Adjust spacing between items */
 }
 
@@ -222,27 +223,44 @@ nav {
 }
 
 @media screen and (max-width: 600px) {
+    body {
+        font-size: 32px;
+    }
+
     .input-div {
         flex-direction: column;
     }
 
+    .large-icons {
+        display: none;
+    }
+
     .tracking-parent {
-        width: 100%;
+        width: 95vw;
+        font-size: 18px;
     }
 
     .tracking-items {
-        width: 100%;
+        width: 100vw;
+        padding: 2px;
+    }
+    .item-date,
+    .item-description,
+    .item-location,
+    .item-status {
+        margin-bottom: -20px;
+        margin-top: -20px;
     }
 
     .button {
-        width: 100%;
+        width: 90vw;
     }
 
     .input {
-        width: 100%;
+        width: 80vw;
     }
 
     .tracking-images img {
-        width: 100%;
+        width: 100vw;
     }
 }

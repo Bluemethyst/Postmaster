@@ -139,13 +139,8 @@ export default defineComponent({
 <template>
     <NavBar />
     <div v-motion-slide-visible-top class="input-div">
-        <input
-            class="input"
-            v-model="trackingNumber"
-            type="text"
-            placeholder="Enter tracking number"
-            @keyup.enter="handleEnterKey"
-        />
+        <input class="input" v-model="trackingNumber" type="text" placeholder="Enter tracking number"
+            @keyup.enter="handleEnterKey" />
         <button class="button" ref="trackButton" @click="trackPackage">Track</button>
         <div v-if="resultData.tracking_events">
             <button v-if="resultData.tracking_events[0]" class="button" @click="getTrackingImage">
@@ -154,10 +149,7 @@ export default defineComponent({
         </div>
     </div>
 
-    <h1
-        v-if="resultData.errors?.[0].details == 'No data found for this Tracking Reference'"
-        class="tracking-error"
-    >
+    <h1 v-if="resultData.errors?.[0].details == 'No data found for this Tracking Reference'" class="tracking-error">
         Tracking Error: Invalid Tracking Number
     </h1>
     <h1 v-else-if="resultData.errors?.[0].details" class="tracking-error">
@@ -170,14 +162,8 @@ export default defineComponent({
         </div>
 
         <div v-if="imageResult && imageResult.length > 0" class="tracking-images">
-            <img
-                v-motion-slide-visible-top
-                class="tracking-image"
-                v-for="(imageUrl, index) in imageResult"
-                :key="index"
-                :src="imageUrl"
-                :alt="'Image ' + (index + 1)"
-            />
+            <img v-motion-slide-visible-top class="tracking-image" v-for="(imageUrl, index) in imageResult" :key="index"
+                :src="imageUrl" :alt="'Image ' + (index + 1)" />
         </div>
 
         <div>
@@ -185,18 +171,11 @@ export default defineComponent({
                 <span class="loader"></span>
             </div>
 
-            <div
-                v-for="(item, index) in reversedTrackingEvents"
-                :key="index"
-                class="tracking-parent"
-            >
+            <div v-for="(item, index) in reversedTrackingEvents" :key="index" class="tracking-parent">
                 <div>
-                    <i
-                        class="material-icons-outlined"
-                        style="font-size: 60px"
-                        v-motion-slide-visible-left
-                        >{{ getIconType(item.status) }}</i
-                    >
+                    <i class="material-icons-outlined large-icons" style="font-size: 60px"
+                        v-motion-slide-visible-left>{{
+                        getIconType(item.status) }}</i>
                 </div>
                 <div class="tracking-items" v-motion-slide-visible-right>
                     <div v-if="item.date_time" class="item-date">
