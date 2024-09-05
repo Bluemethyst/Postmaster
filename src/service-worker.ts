@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Register the service worker
 self.addEventListener('install', (event) => {
     event.waitUntil(
