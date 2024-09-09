@@ -4,6 +4,8 @@ import { defineComponent, ref, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
 import { format } from 'date-fns'
+import { toast, type ToastType } from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
 export default defineComponent({
     components: {
@@ -16,6 +18,16 @@ export default defineComponent({
         const resultData = ref<ResultDataType>({ tracking_events: [] })
         const imageResult = ref('')
         const trackButton = ref()
+
+        const notify = (message: string, level: ToastType | undefined) => {
+            toast(message, {
+                "theme": "dark",
+                "type": level,
+                "position": "bottom-center",
+                "transition": "slide",
+                "dangerouslyHTMLString": true
+            })// ToastOptions
+        }
 
         watch(
             () => router.currentRoute.value.query,
@@ -41,6 +53,7 @@ export default defineComponent({
         }
 
         return {
+            notify,
             trackingNumber,
             resultData,
             imageResult,
@@ -66,22 +79,21 @@ export default defineComponent({
 
             this.isLoadingTracking = true
             if (this.trackingNumber.trim() === '') {
-                console.log('Tracking number is empty.')
+                this.notify("Tracking number is empty", "warning")
                 this.isLoadingTracking = false
-
                 return
             }
             const response = await fetch(
                 this.proxyUrl + 'track?tracking_reference=' + this.trackingNumber
             )
             if (!response.ok) {
-                console.error('Failed to track package')
+                this.notify("Failed to track parcel. Please try again", "error")
                 this.isLoadingTracking = false
                 return
             }
             const tempData = await response.json()
             if (tempData.results[0].errors) {
-                console.error('Failed to track package; Invalid tracking number')
+                this.notify("Invalid tracking number", "error")
                 this.resultData = tempData.results[0]
                 this.isLoadingTracking = false
                 return
@@ -95,16 +107,17 @@ export default defineComponent({
             this.isLoadingImages = true
             this.$forceUpdate()
             if (this.trackingNumber.trim() === '') {
-                console.log('Tracking number is empty.')
+                this.notify("Tracking number is empty", "warning")
                 this.isLoadingImages = false
                 return
             }
             const response = await fetch(
                 this.proxyUrl + 'image?tracking_reference=' + this.trackingNumber
             )
-            if (!response.ok) {
-                console.error('Failed to gather images')
+            if (response.status == 404) {
                 this.isLoadingImages = false
+                this.notify("No images found for this parcel", "error")
+                this.$forceUpdate()
                 return
             }
             const tempData = await response.json()
@@ -150,7 +163,6 @@ export default defineComponent({
     </div>
 
     <h1 v-if="resultData.errors?.[0].details == 'No data found for this Tracking Reference'" class="tracking-error">
-        Tracking Error: Invalid Tracking Number
     </h1>
     <h1 v-else-if="resultData.errors?.[0].details" class="tracking-error">
         Tracking Error: {{ resultData.errors?.[0].details }}
